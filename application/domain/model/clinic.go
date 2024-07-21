@@ -2,8 +2,8 @@ package model
 
 // Clinic struct represents the clinic entity
 type Clinic struct {
-	Name        string `json:"name"`
-	Address     string `json:"address"`
-	PhoneNumber string `json:"phone_number"`
-	Email       string `json:"email"`
+	Name        string `bson:"name"`
+	Address     string `bson:"address"`
+	PhoneNumber string `bson:"phone_number"`
+	Email       string `bson:"email"`
 }

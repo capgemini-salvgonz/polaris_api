@@ -6,12 +6,12 @@ import (
 
 // Doctor struct represents the doctor model
 type Doctor struct {
-	DoctorId    string    `json:"doctor_id"`
-	Name        string    `json:"name"`
-	Specialty   string    `json:"specialty"`
-	Email       string    `json:"email"`
-	PhoneNumber string    `json:"phone_number"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	Clinic      Clinic    `json:"clinic"`
+	DoctorId    string    `bson:"_id"` // echo "5543494708;ricardo.lopez@2code.com.mx" | base64
+	Name        string    `bson:"name"`
+	Specialty   string    `bson:"specialty"`
+	Email       string    `bson:"email"`
+	PhoneNumber string    `bson:"phone_number"`
+	CreatedAt   time.Time `bson:"created_at"`
+	UpdatedAt   time.Time `bson:"updated_at"`
+	Clinic      Clinic    `bson:"clinic"`
 }

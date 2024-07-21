@@ -10,7 +10,11 @@ type PatientsManager struct {
 }
 
 func (pm *PatientsManager) ConsultPatientsList() []model.Patient {
-
 	patients := pm.PatientRepository.FindAll()
 	return patients
+}
+
+func (pm *PatientsManager) ConsultPatientById(id string) *model.Patient {
+	patient := pm.PatientRepository.FindById(id)
+	return patient
 }

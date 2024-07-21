@@ -1,4 +1,0 @@
-package infraestructure
-
-func init() {
-}

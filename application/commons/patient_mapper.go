@@ -16,6 +16,7 @@ func GetPatientDtoFromModel(model *domain.Patient) (dto *apiModel.PatientDto) {
 		DateOfBirth: model.DateOfBirth,
 		Email:       model.Email,
 		PhoneNumber: model.PhoneNumber,
+		DoctorId:    model.DoctorId,
 	}
 
 	return
