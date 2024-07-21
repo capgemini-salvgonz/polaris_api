@@ -8,6 +8,7 @@ type PatientDto struct {
 	DateOfBirth string `json:"date_of_birth"`
 	Email       string `json:"email"`
 	PhoneNumber string `json:"phone_number"`
+	DoctorId    string `json:"doctor_id"`
 }
 
 // PatientsResponse is a struct that represents the list of patients to response

@@ -21,6 +21,8 @@ func init() {
 // main is the entry point of the application.
 func main() {
 	router.HandleFunc("/api/v1/patients", api.GetPatiens).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/patients/{id}", api.GetPatientById).Methods(http.MethodGet)
+
 	error := http.ListenAndServe(":8080", router)
 	if error != nil {
 		log.Error("Error starting the application")

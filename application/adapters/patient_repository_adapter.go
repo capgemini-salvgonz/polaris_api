@@ -1,53 +1,85 @@
 package adapters
 
 import (
+	"context"
+
 	"github.com/chava.gnolasco/polaris/application/domain/model"
 	"github.com/chava.gnolasco/polaris/application/domain/ports"
+	"github.com/chava.gnolasco/polaris/infraestructure/env"
+	"github.com/chava.gnolasco/polaris/infraestructure/log"
+	"github.com/chava.gnolasco/polaris/infraestructure/mongodb"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.uber.org/zap"
 )
 
 type PatientRepositoryAdapter struct {
+	context context.Context
 }
 
-func NewPatientRepositoryAdapter() ports.PatientRepositoryPort {
-	adapter := &PatientRepositoryAdapter{}
-	return adapter
+func NewPatientRepositoryAdapter(ctx context.Context) ports.PatientRepositoryPort {
+	adapter := PatientRepositoryAdapter{context: ctx}
+	return &adapter
 }
 
-func (pra *PatientRepositoryAdapter) FindAll() []model.Patient {
-	patients := []model.Patient{
-		{
-			PatientId:   "NTU0MzQ5NDcwOAo=",
-			Name:        "Rick",
-			LastName:    "Smith",
-			DateOfBirth: "1980-05-29",
-			Email:       "rick.smith@2code.com.mx",
-			PhoneNumber: "5543590849",
-		},
-		{
-			PatientId:   "NTU0MzU5MDg0OQo=",
-			Name:        "John",
-			LastName:    "Doe",
-			DateOfBirth: "1982-11-11",
-			Email:       "john.doe@2code.com.mx",
-			PhoneNumber: "5543590849",
-		},
+/*
+It retrieve all patients from the database
+It returns a slice of patients
+It returns an empty slice if no patients are found
+*/
+func (adapter *PatientRepositoryAdapter) FindAll() (patients []model.Patient) {
+
+	patients = []model.Patient{}
+	patientCollection := mongodb.GetCollection(env.GetEnv().PATIENT_COLLECTION)
+	cursor, err := patientCollection.Find(adapter.context, bson.M{})
+
+	if err != nil {
+		log.Error("Error finding patients: ", zap.String("ERROR", err.Error()))
+		return
 	}
 
-	return patients
+	defer cursor.Close(adapter.context)
+
+	for cursor.Next(adapter.context) {
+		var patient model.Patient
+		err := cursor.Decode(&patient)
+		if err != nil {
+			log.Error("Error reading patients: ", zap.String("ERROR", err.Error()))
+			return
+		}
+
+		patients = append(patients, patient)
+	}
+
+	return
 }
 
-func (pra *PatientRepositoryAdapter) FindById(id string) model.Patient {
-	return model.Patient{}
+/*
+It retrieves a patient by its id
+It returns a pointer to a patient
+It returns nil if no patient is found
+*/
+func (adapter *PatientRepositoryAdapter) FindById(id string) *model.Patient {
+	patientCollection := mongodb.GetCollection(env.GetEnv().PATIENT_COLLECTION)
+
+	var patient model.Patient
+	err := patientCollection.FindOne(adapter.context, bson.M{"_id": id}).Decode(&patient)
+
+	if err != nil {
+		log.Error("Error finding patient by id: ", zap.String("ERROR", err.Error()))
+		return nil
+	}
+
+	return &patient
 }
 
-func (pra *PatientRepositoryAdapter) FindByPhoneNumber(phoneNumber string) model.Patient {
-	return model.Patient{}
+func (adapter *PatientRepositoryAdapter) FindByPhoneNumber(phoneNumber string) *model.Patient {
+	return &model.Patient{}
 }
 
-func (pra *PatientRepositoryAdapter) FindByEmail(email string) model.Patient {
-	return model.Patient{}
+func (adapter *PatientRepositoryAdapter) FindByEmail(email string) *model.Patient {
+	return &model.Patient{}
 }
 
-func (pra *PatientRepositoryAdapter) Save(patient model.Patient) model.Patient {
-	return model.Patient{}
+func (adapter *PatientRepositoryAdapter) Save(patient *model.Patient) *model.Patient {
+	return &model.Patient{}
 }
