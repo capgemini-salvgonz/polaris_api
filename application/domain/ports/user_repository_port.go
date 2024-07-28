@@ -7,4 +7,5 @@ import (
 type UserRepositoryPort interface {
 	FindAll() []model.User
 	FindByEmail(email string) *model.User
+	FindByPhoneNumber(phoneNumber string) *model.User
 }
