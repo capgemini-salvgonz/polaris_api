@@ -1,4 +1,4 @@
-package model
+package dto
 
 // PatientDto is a struct that represents the patient data transfer object
 type PatientDto struct {

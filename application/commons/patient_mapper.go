@@ -1,15 +1,13 @@
 package commons
 
 import (
-	"time"
-
-	domain "github.com/chava.gnolasco/polaris/application/domain/model"
-	apiModel "github.com/chava.gnolasco/polaris/application/entrypoints/model"
+	"github.com/chava.gnolasco/polaris/application/domain/model"
+	"github.com/chava.gnolasco/polaris/application/entrypoints/dto"
 )
 
-func GetPatientDtoFromModel(model *domain.Patient) (dto *apiModel.PatientDto) {
+func GetPatientDtoFromModel(model *model.Patient) *dto.PatientDto {
 
-	dto = &apiModel.PatientDto{
+	return &dto.PatientDto{
 		PatientId:   model.PatientId,
 		Name:        model.Name,
 		LastName:    model.LastName,
@@ -18,13 +16,11 @@ func GetPatientDtoFromModel(model *domain.Patient) (dto *apiModel.PatientDto) {
 		PhoneNumber: model.PhoneNumber,
 		DoctorId:    model.DoctorId,
 	}
-
-	return
 }
 
-func CreateAllPatientsResponse(patients []apiModel.PatientDto) *apiModel.PatientsResponse {
-	PatientsResponse := apiModel.PatientsResponse{
-		Timestamp: time.Now().Format(time.RFC3339), // ISO 8601 format
+func CreateAllPatientsResponse(patients []dto.PatientDto) *dto.PatientsResponse {
+	PatientsResponse := dto.PatientsResponse{
+		Timestamp: GetTimeStampt(),
 		Patients:  patients,
 	}
 

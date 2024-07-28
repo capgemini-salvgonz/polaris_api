@@ -5,7 +5,6 @@ import (
 )
 
 // User struct
-// User representa la tabla users en Go
 type User struct {
 	Id          int       `gorm:"column:id;primaryKey;autoIncrement"`
 	Email       string    `gorm:"column:email;unique"`

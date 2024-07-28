@@ -20,8 +20,11 @@ func init() {
 
 // main is the entry point of the application.
 func main() {
-	router.HandleFunc("/api/v1/patients", api.GetPatiens).Methods(http.MethodGet)
-	router.HandleFunc("/api/v1/patients/{id}", api.GetPatientById).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/polaris/patients", api.GetPatiens).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/polaris/patients/{id}", api.GetPatientById).Methods(http.MethodGet)
+
+	router.HandleFunc("/api/v1/padmin/users", api.GetUsers).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/padmin/login", api.PadminUserLogin).Methods(http.MethodPost)
 
 	error := http.ListenAndServe(":8080", router)
 	if error != nil {
