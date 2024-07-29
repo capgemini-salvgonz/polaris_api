@@ -30,6 +30,7 @@ func (adapter *UserRepositoryAdapter) FindAll() []model.User {
 FindByID returns a user by its ID.
 */
 func (adapter *UserRepositoryAdapter) FindByEmail(email string) *model.User {
+	log.Info("[FindByEmail] Finding user by email: " + email)
 	query := "SELECT id, email, phone_number, password, roles, created_at FROM users WHERE email = ?"
 	mysqlClient := mysql.GetMySQLClient()
 
@@ -40,6 +41,7 @@ func (adapter *UserRepositoryAdapter) FindByEmail(email string) *model.User {
 	}
 
 	defer stmt.Close()
+
 	row := stmt.QueryRow(email)
 	var user model.User
 	var createdAtRaw []uint8

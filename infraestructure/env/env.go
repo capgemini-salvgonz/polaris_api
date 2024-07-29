@@ -13,6 +13,7 @@ type Environment struct {
 	MYSQL_DB_NAME      string
 	MYSQL_USER         string
 	MYSQL_PASSWORD     string
+	JWT_KEY            string
 }
 
 var env Environment
@@ -27,6 +28,7 @@ func init() {
 		MYSQL_DB_NAME:      os.Getenv("MYSQL_DB_NAME"),
 		MYSQL_USER:         os.Getenv("MYSQL_USER"),
 		MYSQL_PASSWORD:     os.Getenv("MYSQL_PASSWORD"),
+		JWT_KEY:            os.Getenv("JWT_KEY"),
 	}
 }
 

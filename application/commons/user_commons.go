@@ -5,7 +5,7 @@ import (
 	"github.com/chava.gnolasco/polaris/application/entrypoints/dto"
 )
 
-func GetUserDtoFromModel(model *model.User) *dto.UserDto {
+func GetUserDtoFromModel(model *model.User, jwt string) *dto.UserDto {
 
 	return &dto.UserDto{
 		Id:          model.Id,
@@ -13,5 +13,6 @@ func GetUserDtoFromModel(model *model.User) *dto.UserDto {
 		PhoneNumber: model.PhoneNumber,
 		Roles:       model.Roles,
 		CreatedAt:   model.CreatedAt,
+		JWT:         jwt,
 	}
 }

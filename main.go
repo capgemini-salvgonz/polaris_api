@@ -3,8 +3,10 @@ package main
 
 import (
 	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/chava.gnolasco/polaris/application/entrypoints/api"
+	"github.com/chava.gnolasco/polaris/application/entrypoints/middleware"
 	"github.com/chava.gnolasco/polaris/infraestructure/log"
 
 	"github.com/gorilla/mux"
@@ -18,13 +20,26 @@ func init() {
 	router = mux.NewRouter()
 }
 
-// main is the entry point of the application.
+/*
+Main function that starts the application.
+*/
 func main() {
-	router.HandleFunc("/api/v1/polaris/patients", api.GetPatiens).Methods(http.MethodGet)
-	router.HandleFunc("/api/v1/polaris/patients/{id}", api.GetPatientById).Methods(http.MethodGet)
+	// Start the pprof server
+	go func() {
+		http.ListenAndServe("localhost:6060", nil)
+	}()
 
-	router.HandleFunc("/api/v1/padmin/users", api.GetUsers).Methods(http.MethodGet)
+	// Public resources
 	router.HandleFunc("/api/v1/padmin/login", api.PadminUserLogin).Methods(http.MethodPost)
+
+	// Private resources
+
+	// --- Patients
+	router.Handle("/api/v1/polaris/patients", middleware.JWTAuth(http.HandlerFunc(api.GetPatiens))).Methods(http.MethodGet)
+	router.Handle("/api/v1/polaris/patients/{id}", middleware.JWTAuth(http.HandlerFunc(api.GetPatientById))).Methods(http.MethodGet)
+
+	// --- Users
+	router.Handle("/api/v1/padmin/users", middleware.JWTAuth(http.HandlerFunc(api.GetUsers))).Methods(http.MethodGet)
 
 	error := http.ListenAndServe(":8080", router)
 	if error != nil {
