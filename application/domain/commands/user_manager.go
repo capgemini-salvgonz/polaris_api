@@ -1,12 +1,25 @@
 package commands
 
 import (
-	"regexp"
+	"time"
 
 	"github.com/chava.gnolasco/polaris/application/commons"
 	"github.com/chava.gnolasco/polaris/application/domain/model"
 	"github.com/chava.gnolasco/polaris/application/domain/ports"
+	"github.com/chava.gnolasco/polaris/infraestructure/env"
+	"github.com/chava.gnolasco/polaris/infraestructure/log"
+	"github.com/golang-jwt/jwt/v4"
 )
+
+var jwtKey = []byte(env.GetEnv().JWT_KEY)
+
+type JWTClaims struct {
+	Id          int    `json:"id"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	Roles       string `json:"roles"`
+	jwt.StandardClaims
+}
 
 type UserManager struct {
 	UserRepository ports.UserRepositoryPort
@@ -27,17 +40,45 @@ func (um *UserManager) ConsultUserByPhoneNumber(phoneNumber string) *model.User 
 	return user
 }
 
-func (um *UserManager) AuthenticatePadminUser(email string, password string) *model.User {
+/*
+It creates a JWT for an authenticated user.
+*/
+func (um *UserManager) GenerateJWT(user *model.User) (string, error) {
+	expirationTime := time.Now().Add(24 * time.Hour)
+
+	claims := &JWTClaims{
+		Id:          user.Id,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+		Roles:       user.Roles,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
+}
+
+/*
+AuthenticatePadminUser is a function that authenticates a user with the roles ADM, FS or AST.
+*/
+func (um *UserManager) AuthenticatePadminUser(email string, password string) (*model.User, string) {
+
+	log.Info("AuthenticatePadminUser, [" + email + "]")
 
 	user := um.ConsultUserByEmail(email)
+
 	if user == nil || !commons.CheckPasswordHash(password, user.Password) {
-		return nil
+		return nil, ""
 	}
 
-	re := regexp.MustCompile(`\b(ADM|FS|AST)\b`)
-	if !re.MatchString(user.Roles) {
-		return nil
-	}
+	log.Info("User found: " + user.PhoneNumber)
+	jwt, _ := um.GenerateJWT(user)
 
-	return user
+	return user, jwt
 }

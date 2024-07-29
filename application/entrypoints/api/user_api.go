@@ -35,7 +35,7 @@ func PadminUserLogin(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	user := userManager.AuthenticatePadminUser(
+	user, jwt := userManager.AuthenticatePadminUser(
 		commons.DecodeBase64(userLoginRequest.Email),
 		commons.DecodeBase64(userLoginRequest.Password))
 
@@ -44,7 +44,7 @@ func PadminUserLogin(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	response := commons.GetUserDtoFromModel(user)
+	response := commons.GetUserDtoFromModel(user, jwt)
 
 	writer.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(writer).Encode(response)
